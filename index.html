@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dodge Blitz – Descarga el juego</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #080810;
+      --surface:   #0f0f1a;
+      --surface2:  #16162a;
+      --accent:    #c8ff00;
+      --accent2:   #ff3cac;
+      --text:      #f0f0f0;
+      --muted:     #6b6b88;
+      --border:    rgba(200,255,0,0.12);
+      --font-disp: 'Bebas Neue', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── RUIDO DE FONDO ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    /* ── LÍNEAS DIAGONALES FONDO ── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background: repeating-linear-gradient(
+        -55deg,
+        transparent,
+        transparent 60px,
+        rgba(200,255,0,0.015) 60px,
+        rgba(200,255,0,0.015) 61px
+      );
+      pointer-events: none;
+    }
+
+    /* ── WRAPPER ── */
+    .page {
+      position: relative; z-index: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      padding-bottom: 20px;
+      margin-bottom: 0;
+    }
+
+    .nav-logo {
+      font-family: var(--font-disp);
+      font-size: 22px;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+
+    .nav-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 4px 12px;
+      letter-spacing: 0.15em;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: center;
+      padding: 72px 0 64px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .hero-left { display: flex; flex-direction: column; gap: 28px; }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+    }
+
+    .hero-tag::before {
+      content: '';
+      display: block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: blink 1.6s ease-in-out infinite;
+    }
+
+    .hero-titulo {
+      font-family: var(--font-disp);
+      font-size: clamp(80px, 16vw, 148px);
+      line-height: 0.88;
+      letter-spacing: 0.01em;
+      color: #fff;
+    }
+
+    .hero-titulo .linea-accent { color: var(--accent); display: block; }
+
+    .hero-desc {
+      font-size: clamp(14px, 2.5vw, 17px);
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.7;
+      max-width: 420px;
+    }
+
+    /* BOTÓN PRINCIPAL */
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--accent);
+      color: #080810;
+      font-family: var(--font-disp);
+      font-size: clamp(18px, 3.5vw, 24px);
+      letter-spacing: 0.12em;
+      padding: 18px 40px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      position: relative;
+      overflow: hidden;
+      width: fit-content;
+    }
+
+    .btn-download::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      opacity: 0;
+      transition: opacity 0.12s;
+    }
+
+    .btn-download:hover { transform: translate(-3px, -3px); }
+    .btn-download:hover::after { opacity: 0.12; }
+    .btn-download:active { transform: translate(0, 0); }
+
+    .btn-download-icon {
+      width: 28px; height: 28px;
+      flex-shrink: 0;
+    }
+
+    .btn-shadow {
+      display: inline-block;
+      width: fit-content;
+      position: relative;
+    }
+
+    .btn-shadow::after {
+      content: '';
+      position: absolute;
+      bottom: -6px; right: -6px;
+      width: 100%; height: 100%;
+      border: 2px solid var(--accent);
+      opacity: 0.35;
+      transition: all 0.12s;
+      pointer-events: none;
+    }
+
+    .btn-shadow:hover::after {
+      bottom: -9px; right: -9px;
+      opacity: 0.5;
+    }
+
+    .meta-download {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .meta-dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+
+    /* HERO RIGHT - Stats decorativos */
+    .hero-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      border-left: 2px solid var(--border);
+      padding-left: 40px;
+      flex-shrink: 0;
+    }
+
+    .stat {
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .stat:last-child { border-bottom: none; }
+
+    .stat-num {
+      font-family: var(--font-disp);
+      font-size: clamp(32px, 5vw, 48px);
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      margin-top: 4px;
+    }
+
+    /* ── SECCIÓN TUTORIAL ── */
+    .tutorial {
+      padding: 80px 0 0;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .section-num {
+      font-family: var(--font-disp);
+      font-size: 100px;
+      color: rgba(255,255,255,0.04);
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .section-titulo {
+      font-family: var(--font-disp);
+      font-size: clamp(32px, 6vw, 52px);
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+
+    .section-titulo span { color: var(--accent); }
+
+    /* PASOS */
+    .pasos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .paso {
+      padding: 32px 28px;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      transition: background 0.15s;
+    }
+
+    .paso:last-child { border-right: none; }
+    .paso:hover { background: rgba(200,255,0,0.03); }
+
+    .paso-index {
+      font-family: var(--font-disp);
+      font-size: 56px;
+      color: rgba(200,255,0,0.12);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .paso-icono {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .paso-titulo {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+      margin-bottom: 10px;
+      letter-spacing: 0.02em;
+    }
+
+    .paso-desc {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .paso-badge {
+      display: inline-block;
+      margin-top: 14px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      background: rgba(200,255,0,0.1);
+      color: var(--accent);
+      padding: 3px 10px;
+      letter-spacing: 0.15em;
+    }
+
+    /* ALERTA IMPORTANTE */
+    .alerta {
+      margin-top: 32px;
+      border-left: 3px solid var(--accent2);
+      background: rgba(255,60,172,0.06);
+      padding: 20px 24px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .alerta-icono { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+
+    .alerta-texto {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.7;
+    }
+
+    .alerta-texto strong {
+      color: var(--accent2);
+      font-weight: 500;
+    }
+
+    /* ── VERSIÓN ── */
+    .version-bar {
+      margin-top: 72px;
+      padding: 28px 0;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .version-info {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .ver-chip {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      letter-spacing: 0.15em;
+    }
+
+    .ver-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* JUGAR EN BROWSER */
+    .jugar-link {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 2px;
+      transition: color 0.12s, border-color 0.12s;
+      letter-spacing: 0.05em;
+    }
+    .jugar-link:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      padding-top: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    .footer-copy span { color: var(--accent); }
+
+    /* ── ANIMACIONES ── */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.2; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 48px 0 48px;
+        gap: 48px;
+      }
+      .hero-stats {
+        border-left: none;
+        border-top: 1px solid var(--border);
+        padding-left: 0;
+        padding-top: 32px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 24px;
+      }
+      .stat { border-bottom: none; padding: 0; }
+      .pasos { grid-template-columns: 1fr 1fr; }
+      .paso { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    }
+
+    @media (max-width: 400px) {
+      .pasos { grid-template-columns: 1fr; }
+      .paso { border-right: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">DODGE BLITZ</div>
+    <div class="nav-pill">ANDROID · V1.0</div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-tag">DISPONIBLE PARA ANDROID</div>
+
+      <h1 class="hero-titulo">
+        DODGE
+        <span class="linea-accent">BLITZ</span>
+      </h1>
+
+      <p class="hero-desc">
+        Esquiva oleadas de enemigos neón. Tres tipos de amenazas, dificultad progresiva, récord guardado. Sobrevive el mayor tiempo posible.
+      </p>
+
+      <div>
+        <div class="btn-shadow">
+          <a
+            class="btn-download"
+            href="https://github.com/MigXploit/dodge-blitz1/releases/download/v1.0/Dodge.Blitz.apk"
+            download="Dodge.Blitz.apk"
+          >
+            <svg class="btn-download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v13M7 11l5 5 5-5"/><path d="M5 20h14"/>
+            </svg>
+            DESCARGAR APK
+          </a>
+        </div>
+
+        <div class="meta-download" style="margin-top: 18px;">
+          <div class="meta-item">
+            <div class="meta-dot"></div>
+            Gratis
+          </div>
+          <div class="meta-item">
+            <div class="meta-dot"></div>
+            Android 5.0+
+          </div>
+          <div class="meta-item">
+            <div class="meta-dot"></div>
+            ~43 KB
+          </div>
+          <div class="meta-item">
+            <div class="meta-dot"></div>
+            Sin internet requerido
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS DECORATIVOS -->
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">3</div>
+        <div class="stat-label">TIPOS DE ENEMIGOS</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">NIVELES</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">2</div>
+        <div class="stat-label">PLATAFORMAS</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TUTORIAL DE INSTALACIÓN -->
+  <section class="tutorial">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <h2 class="section-titulo">CÓMO <span>INSTALAR</span></h2>
+    </div>
+
+    <div class="pasos">
+
+      <div class="paso">
+        <div class="paso-index">01</div>
+        <span class="paso-icono">⬇️</span>
+        <div class="paso-titulo">Descarga el APK</div>
+        <div class="paso-desc">
+          Toca el botón "Descargar APK" de arriba. El archivo se guardará en la carpeta <strong style="color:#f0f0f0;">Descargas</strong> de tu celular.
+        </div>
+        <span class="paso-badge">AUTOMÁTICO</span>
+      </div>
+
+      <div class="paso">
+        <div class="paso-index">02</div>
+        <span class="paso-icono">📂</span>
+        <div class="paso-titulo">Abre el archivo</div>
+        <div class="paso-desc">
+          Ve a tu app de <strong style="color:#f0f0f0;">Archivos</strong> o <strong style="color:#f0f0f0;">Descargas</strong>, busca <code style="color:var(--accent); font-size:11px;">Dodge.Blitz.apk</code> y tócalo para abrirlo.
+        </div>
+      </div>
+
+      <div class="paso">
+        <div class="paso-index">03</div>
+        <span class="paso-icono">🔓</span>
+        <div class="paso-titulo">Permitir fuentes desconocidas</div>
+        <div class="paso-desc">
+          Android te pedirá permiso. Toca <strong style="color:#f0f0f0;">"Configuración"</strong> y activa la opción <strong style="color:#f0f0f0;">"Instalar apps desconocidas"</strong> para tu navegador o gestor de archivos.
+        </div>
+        <span class="paso-badge">UNA SOLA VEZ</span>
+      </div>
+
+      <div class="paso">
+        <div class="paso-index">04</div>
+        <span class="paso-icono">🕹️</span>
+        <div class="paso-titulo">¡Instala y juega!</div>
+        <div class="paso-desc">
+          Regresa y toca <strong style="color:#f0f0f0;">"Instalar"</strong>. En segundos aparecerá el ícono de Dodge Blitz en tu pantalla. ¡Listo!
+        </div>
+        <span class="paso-badge">FUNCIONA OFFLINE</span>
+      </div>
+
+    </div>
+
+    <!-- ALERTA FUENTES DESCONOCIDAS -->
+    <div class="alerta">
+      <div class="alerta-icono">⚠️</div>
+      <div class="alerta-texto">
+        <strong>¿No aparece la opción de instalar?</strong><br/>
+        En Android 8 o superior, ve a <strong>Ajustes → Aplicaciones → (tu navegador o gestor de archivos) → Instalar apps desconocidas</strong> y actívalo. Puedes desactivarlo de nuevo después de instalar. Es completamente seguro, el APK viene directo del desarrollador.
+      </div>
+    </div>
+  </section>
+
+  <!-- BARRA DE VERSIÓN -->
+  <div class="version-bar">
+    <div class="version-info">
+      <div class="ver-chip">V 1.0</div>
+      <div class="ver-label">LANZAMIENTO INICIAL</div>
+      <div class="ver-label" style="color:rgba(255,255,255,0.15)">·</div>
+      <div class="ver-label">MAYO 2025</div>
+    </div>
+    <a
+      href="https://migxploit.github.io/dodge-blitz1/"
+      target="_blank"
+      class="jugar-link"
+    >
+      ¿Prefieres jugar en el navegador? →
+    </a>
+  </div>
+
+  <!-- CONTROLES -->
+  <section style="padding: 64px 0 0;">
+    <div class="section-header" style="margin-bottom: 32px;">
+      <div class="section-num">02</div>
+      <h2 class="section-titulo">CÓMO <span>JUGAR</span></h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.05);">
+      <div style="background:var(--bg); padding: 32px 28px;">
+        <div style="font-family:var(--font-disp); font-size:13px; letter-spacing:0.2em; color:var(--muted); margin-bottom:20px;">MÓVIL</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px; font-family:var(--font-mono); font-size:12px; color:rgba(255,255,255,0.6);">
+            <span style="font-size:20px;">🕹️</span> Joystick virtual — esquina inferior izquierda
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; font-family:var(--font-mono); font-size:12px; color:rgba(255,255,255,0.6);">
+            <span style="font-size:20px;">⏸️</span> Botón pausa — esquina superior derecha
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--bg); padding: 32px 28px;">
+        <div style="font-family:var(--font-disp); font-size:13px; letter-spacing:0.2em; color:var(--muted); margin-bottom:20px;">PC / NAVEGADOR</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px; font-family:var(--font-mono); font-size:12px; color:rgba(255,255,255,0.6);">
+            <span style="background:var(--surface2); padding:2px 10px; font-size:13px; letter-spacing:0.1em; color:var(--accent);">WASD</span> o teclas de flecha para moverse
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; font-family:var(--font-mono); font-size:12px; color:rgba(255,255,255,0.6);">
+            <span style="background:var(--surface2); padding:2px 10px; font-size:13px; letter-spacing:0.1em; color:var(--accent);">P / ESC</span> para pausar
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-copy">DODGE BLITZ <span>·</span> V1.0 <span>·</span> 2025</div>
+    <div class="footer-copy" style="color:rgba(255,255,255,0.15);">HECHO CON HTML5 · CANVAS · VANILLA JS</div>
+  </footer>
+
+</div>
+</body>
+</html>
